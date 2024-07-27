@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>text-align: center;コード紹介</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header, .footer {
+            background: #333;
+            color: #fff;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+        }
+        .main {
+            flex: 1;
+            width: 90%;
+            margin: 20px;
+        }
+        .nav {
+            background: #ddd;
+            width: 100%;
+            padding: 10px;
+            text-align: center;
+        }
+        .nav a {
+            margin: 0 10px;
+            color: #333;
+            text-decoration: none;
+        }
+        .code-block {
+            background-color: #f0f0f0;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .code-block pre {
+            white-space: pre-wrap;  
+            white-space: -moz-pre-wrap;
+            white-space: -pre-wrap;
+            white-space: -o-pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>プログラミングコード提供</h1>
+        <p>あなたのビジネスを次のレベルへ</p>
+    </div>
+    <div class="nav">
+        <a href="index.html">ホーム</a>
+        <a href="code.html">コード紹介</a>
+    </div>
+    <div class="main">
+        <h1>コード紹介</h1>
+        <div class="code-block">
+            <h2> コード1: openCV　C++「画像から輪郭抽出と面積計算」</h2>
+            <p>このコードは、OpenCV（Open Source Computer Vision Library）を使用して、画像の輪郭を抽出し、それらの輪郭の面積を計算するためのものだ。以下に、各部分の詳細な説明を示する。<br><br>
+
+1.画像の読み込み: imread関数を使用して、指定されたパスから画像を読み込みる。ここでは、画像はグレースケール（0）として読み込まれる。<br><br>
+2.二値化処理: threshold関数を使用して、画像を二値化する。この関数は、画像の各ピクセルに対して閾値を適用する。ピクセル値が閾値より大きい場合、そのピクセルは最大値（ここでは255）に設定される。<br>それ以外の場合、ピクセルは0に設定される。THRESH_BINARY_INVフラグは、この動作を反転させ、閾値より大きいピクセルを0に、それ以外のピクセルを最大値に設定する。<br><br>
+3.輪郭の抽出: findContours関数を使用して、二値化画像から輪郭を抽出する。この関数は、画像内の白色（または前景）ピクセルの連続したグループを見つけ、それぞれを個別の輪郭として返する。<br><br>
+4.各輪郭の面積計算: contourArea関数を使用して、各輪郭の面積を計算する。これは、輪郭を形成するピクセルの数に相当する。<br><br>
+5.輪郭の描画: drawContours関数を使用して、元の画像に輪郭を描画する。これにより、視覚的にどの部分が輪郭として抽出されたかを確認できる。<br><br>
+6.画像の表示: 最後に、imshow関数を使用して、元の画像と輪郭が描画された画像を表示する。waitKey(0)は、ユーザーがキーを押すまで画像ウィンドウを開いたままにする。<br></p>
+            <pre>ソースコードを以下に示します。
+#include <opencv2/opencv.hpp>
+#include <iostream>
+
+using namespace cv;
+using namespace std;
+
+int main() {
+    // 画像データ用変数の宣言
+    Mat image = imread("C:\\opencv4.3.0\\sources\\samples\\fruit2_mono.bmp", 0);
+
+    // 2. 二値化処理
+    Mat binary_image;
+    threshold(image, binary_image, 127, 255, THRESH_BINARY_INV);
+
+    // 3. 輪郭の抽出
+    vector<vector<Point>> contours;
+    findContours(binary_image, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+
+    // 4. 各輪郭の面積計算
+    for (size_t i = 0; i < contours.size(); i++) {
+        double area = contourArea(contours[i]);
+        cout << "この画像 " << i + 1 << ": " << area << " ピクセル" << endl;
+    }
+
+    // 輪郭を描画して視覚的に確認
+    Mat contour_image;
+    cvtColor(image, contour_image, COLOR_GRAY2BGR);
+    for (size_t i = 0; i < contours.size(); i++) {
+        drawContours(contour_image, contours, (int)i, Scalar(255, 0, 0), 3);  // 青色で輪郭を描画
+    }
+
+    // 画像の表示
+    imshow("オリジナル画像", image);
+    imshow("輪郭付き画像", contour_image);
+    waitKey(0);
+
+    return 0;
+}
+            </pre>
+        </div>
+        <div class="code-block">
+            <h2> コード2: C++「選択形式によるシンプルなバトルロイヤルゲーム」
+</h2>
+            <p>このコードは、C++で実装されたシンプルなバトルロイヤルゲームの骨組みを提供します。プレイヤー（自分の家）と友達の家がマップ上に配置され、敵や罠、溶岩、パワーアップアイテムといった要素も含まれています。ゲームの目的は、最後まで生き残り、最も高いHPを持つことです。<br><br><br>
+
+主要クラスと機能<br><br>
+1.EveryBodysHome:基本的な家のクラスで、座標、HP、レベル、攻撃力を持つ。<br>
+設置した家から自分の位置を更新し、マップの範囲内に制限するupdateメソッドや、描画メソッド、戦闘に関するメソッドを持つ。<br><br>
+2.MyHomeとFriendsHome:EveryBodysHomeを継承したサブクラスで、それぞれ自分の家と友達の家を表す。updateメソッドをオーバーライドして特定のメッセージを表示する。<br><br>
+3.Enemy:敵のクラスで、HP、レベル、攻撃力、座標を持つ。
+敵の位置をランダムに更新するメソッドや、ダメージを受けるメソッドを持つ。<br><br>
+4.Trap:罠のクラスで、座標と敵が罠にかかったかどうかを判定するメソッドを持つ。<br><br>
+5.Lava:溶岩のクラスで、中心の座標、半径、ダメージ、半径の減少率を持つ。溶岩の半径を一定の割合で減少させるメソッドを持つ。<br><br>
+6.PowerUp:パワーアップアイテムのクラスで、座標、HPブースト、レベルブースト、攻撃力ブーストを持つ。アイテムが収集されたかどうかを判定するメソッドを持つ。<br><br>
+その他の機能<br>
+・compareHP:2つの家のHPを比較して、結果を表示する関数。<br><br>
+・printWithDelay:文字列を一文字ずつ遅延表示する関数で、ユーザーインターフェースをよりダイナミックにする。<br><br>
+・printLoadingScreen:ロード画面を表示し、進行状況をゲージで表す関数。<br>
+・main関数:ゲームの初期化と実行を行う。ロード画面の表示、自分の家と友達の家の生成、敵、罠、溶岩、パワーアップアイテムの生成などを行う。</p>
+            <pre>ソースコードを以下に示します。
+#include <iostream>
+#include <iomanip>
+#include <vector>
+#include <memory>
+#include <thread>
+#include <chrono>
+#include <cstdlib> // rand() 用
+
+// マップの範囲
+const int MAP_WIDTH = 100;
+const int MAP_HEIGHT = 100;
+
+// スーパークラス
+class EveryBodysHome {
+private:
+    double x, y; // 座標
+    int HP;              // ヒットポイント
+    int level;           // レベル
+    int attackPower;     // 攻撃力
+
+    void initialize(double initX, double initY, int initHP, int initLevel, int initAttackPower) {
+        x = initX;
+        y = initY;
+        HP = initHP;
+        level = initLevel;
+        attackPower = initAttackPower;
+    }
+
+public:
+    EveryBodysHome(double initX, double initY, int initHP, int initLevel, int initAttackPower) {
+        initialize(initX, initY, initHP, initLevel, initAttackPower);
+    }
+
+    virtual void update(double offsetX, double offsetY) {
+        x += offsetX;
+        y += offsetY;
+        // マップの範囲内に収まるように制限
+        if (x < 0) x = 0;
+        if (x >= MAP_WIDTH) x = MAP_WIDTH - 1;
+        if (y < 0) y = 0;
+        if (y >= MAP_HEIGHT) y = MAP_HEIGHT - 1;
+    }
+
+    void draw() const {
+        std::cout << "位置は: (" << x << ", " << y << ")に移動しました！\n"
+            << "HP: " << HP << "\n"
+            << "レベル: " << level << "\n"
+            << "攻撃力: " << attackPower << std::endl;
+    }
+
+    double getX() const {
+        return x;
+    }
+
+    double getY() const {
+        return y;
+    }
+
+    int getHP() const {
+        return HP;
+    }
+
+    int getLevel() const {
+        return level;
+    }
+
+    int getAttackPower() const {
+        return attackPower;
+    }
+
+    void boostStats(int hpBoost, int levelBoost, int attackBoost) {
+        HP += hpBoost;
+        level += levelBoost;
+        attackPower += attackBoost;
+    }
+
+    void defeatEnemy(int enemyHP, int enemyLevel, int enemyAttackPower) {
+        HP += enemyHP / 10;
+        level += enemyLevel / 2;
+        attackPower += enemyAttackPower / 5;
+    }
+
+    void takeDamage(int damage) {
+        HP -= damage;
+        if (HP < 0) {
+            HP = 0;
+            std::cout << "自分のHPが0になりました。戦闘不能！！You lose！！ゲームオーバー！!" << std::endl;
+            std::exit(0); // ゲームを強制終了
+        }
+    }
+
+    void reset() {
+        HP = 100;
+        level = 1;
+        attackPower = 10;
+        x = 0.0;
+        y = 0.0;
+    }
+
+    bool evadeAttack() {
+        int evadeChance = rand() % 100; // 0から99のランダムな数
+        return evadeChance < 30; // 30%の確率で攻撃を回避出来る
+    }
+
+    // 接触判定メソッド
+    bool isColliding(double otherX, double otherY) const {
+        const double collisionDistance = 5.0; // 接触と見なす距離
+        double dx = x - otherX;
+        double dy = y - otherY;
+        return (std::sqrt(dx * dx + dy * dy) <= collisionDistance);
+    }
+
+    // レベルアップメソッド
+    void levelUp() {
+        level++;
+        attackPower += 5; // レベル1ごとに攻撃力が5上がる
+    }
+};
+
+// サブクラス1
+class MyHome : public EveryBodysHome {
+public:
+    MyHome(double initX, double initY, int initHP, int initLevel, int initAttackPower)
+        : EveryBodysHome(initX, initY, initHP, initLevel, initAttackPower) {}
+
+    void update(double offsetX, double offsetY) override {
+        EveryBodysHome::update(offsetX, offsetY);
+        std::cout << "自分は現在の位置を離れ、新たな位置に移動した。" << std::endl;
+    }
+};
+
+// サブクラス2
+class FriendsHome : public EveryBodysHome {
+public:
+    FriendsHome(double initX, double initY, int initHP, int initLevel, int initAttackPower)
+        : EveryBodysHome(initX, initY, initHP, initLevel, initAttackPower) {}
+
+    void update(double offsetX, double offsetY) override {
+        EveryBodysHome::update(offsetX, offsetY);
+        std::cout << "友達は現在の位置を離れ、新たな位置に移動した。\n" << std::endl;
+        std::cout << "＜  今の状況  ＞" << std::endl;
+    }
+};
+
+// 敵クラス
+class Enemy {
+public:
+    int HP;
+    int level;
+    int attackPower;
+    double x, y; // 敵の座標
+
+    Enemy(int initHP, int initLevel, int initAttackPower, double initX, double initY)
+        : HP(initHP), level(initLevel), attackPower(initAttackPower), x(initX), y(initY) {}
+
+    void updatePosition() {
+        x = rand() % MAP_WIDTH; // 0から99のランダムな位置に移動
+        y = rand() % MAP_HEIGHT; // 0から99のランダムな位置に移動
+    }
+
+    void draw() const {
+        std::cout << "敵のHP: " << HP << "\n"
+            << "敵のレベル: " << level << "\n"
+            << "敵の攻撃力: " << attackPower << "\n"
+            << "敵の位置: (" << x << ", " << y << ")" << std::endl;
+    }
+
+    void takeDamage(int damage) {
+        HP -= damage;
+        if (HP < 0) HP = 0;
+    }
+
+    void strengthen() {
+        HP += 10;
+        attackPower += 2;
+        level += 1;
+    }
+
+    // HPを取得するメソッドを追加
+    int getHP() const {
+        return HP;
+    }
+
+    int getLevel() const {
+        return level;
+    }
+
+    int getAttackPower() const {
+        return attackPower;
+    }
+
+    // 接触判定メソッド
+    bool isColliding(double otherX, double otherY) const {
+        const double collisionDistance = 5.0; // 接触と見なす距離
+        double dx = x - otherX;
+        double dy = y - otherY;
+        return (std::sqrt(dx * dx + dy * dy) <= collisionDistance);
+    }
+};
+
+// 罠クラス
+class Trap {
+public:
+    double x, y; // 罠の座標
+
+    Trap(double initX, double initY)
+        : x(initX), y(initY) {}
+
+    void draw() const {
+        std::cout << "罠の位置は(" << x << ", " << y << ")に設置します。かかってくれるでしょうか？？" << std::endl;
+    }
+
+    bool isTriggered(double enemyX, double enemyY) const {
+        return (x == enemyX && y == enemyY);
+    }
+
+    int calculateDamage(int enemyHP) const {
+        return static_cast<int>(enemyHP * 0.3); // 敵のHPの3割のダメージ
+    }
+};
+
+// 溶岩クラス
+class Lava {
+public:
+    double centerX, centerY; // 溶岩の中心
+    double radius;           // 溶岩の半径
+    int damage;              // 溶岩のダメージ
+    double radiusDecreaseRate; // 半径減少率
+
+    // コンストラクターに radiusDecreaseRate を追加
+    Lava(double initCenterX, double initCenterY, double initRadius, int initDamage, double initRadiusDecreaseRate)
+        : centerX(initCenterX), centerY(initCenterY), radius(initRadius), damage(initDamage), radiusDecreaseRate(initRadiusDecreaseRate) {}
+
+    void update() {
+        radius *= (1.0 - radiusDecreaseRate); // 半径を一定の割合で減少させる
+        if (radius < 0) radius = 0; // 半径が負にならないようにする
+    }
+
+    void draw() const {
+        std::cout << "溶岩の中心: (" << centerX << ", " << centerY << ")\n"
+            << "溶岩の半径: " << radius << "\n"
+            << "溶岩のダメージ - " << damage << std::endl;
+    }
+
+    bool isColliding(double x, double y) const {
+        double dx = x - centerX;
+        double dy = y - centerY;
+        double distance = std::sqrt(dx * dx + dy * dy);
+        return distance <= radius; // 円の内側に当たったかどうかを確認
+    }
+};
+
+
+// パワーアップアイテムクラス
+class PowerUp {
+public:
+    double x, y; // アイテムの座標
+    int hpBoost;
+    int levelBoost;
+    int attackBoost;
+
+    PowerUp(double initX, double initY, int initHPBoost, int initLevelBoost, int initAttackBoost)
+        : x(initX), y(initY), hpBoost(initHPBoost), levelBoost(initLevelBoost), attackBoost(initAttackBoost) {}
+
+    void draw() const {
+        std::cout << "パワーアップアイテムは (" << x << ", " << y << ")にあるぞ！\n"
+            << "HPが上がった: " << hpBoost << "\n"
+            << "レベルが上がった: " << levelBoost << "\n"
+            << "攻撃力が上がった: " << attackBoost << std::endl;
+    }
+
+    bool isCollected(double homeX, double homeY) const {
+        return (x == homeX && y == homeY);
+    }
+};
+
+// HPを比較する関数
+/*void compareHP(const MyHome& myHome, const FriendsHome& friendHome) {
+
+    std::cout << "\nゲーム終了！結果発表!!\n""\n＜　最終結果　＞\n";
+    std::cout << "自分のHPは " << myHome.getHP() << std::endl;
+    std::cout << "対して、友達のHPは " << friendHome.getHP() << std::endl;
+
+    if (myHome.getHP() > friendHome.getHP()) {
+        std::cout << "HPが高い方は？・・・・・・・・・自分の方がHPが高いです！Victory!!\n";
+    }
+    else if (myHome.getHP() < friendHome.getHP()) {
+        std::cout << "HPが高い方は？・・・・・・・・・友達の方がHPが高いです！Too Bad…\n";
+    }
+    else {
+        std::cout << "HPが高い方は？・・・・・・・・・自分と友達のHPは同じです！DRAW!\n";
+    }
+}*/
+
+// 文字を一文字ずつ表示する関数
+void printWithDelay(const std::string& text, std::chrono::milliseconds delay) {
+    for (char ch : text) {
+        std::cout << ch;
+        std::cout.flush(); // バッファをフラッシュして即時表示
+        std::this_thread::sleep_for(delay); // 文字と文字との時間を挿入
+    }
+    std::cout << std::endl; // 行末に改行
+}
+
+void printWithDelay(const std::string& text, int delayMilliseconds = 100) {
+    for (char c : text) {
+        std::cout << c;
+        std::cout.flush();
+        std::this_thread::sleep_for(std::chrono::milliseconds(delayMilliseconds));
+    }
+    std::cout << std::endl; // 最後に改行を追加
+}
+
+void compareHP(const EveryBodysHome& home1, const EveryBodysHome& home2) {
+    int hp1 = home1.getHP();
+    int hp2 = home2.getHP();
+
+    std::string result = "\nゲーム終了！結果発表!!\n""\n＜　最終結果　＞\n\n";
+
+    printWithDelay(result);
+
+    if (hp1 > hp2) {
+        result = "HPが高い方は？・・・・・・・・・・自分の方がHPが高いです！\nVictory!!\n";
+    }
+    else if (hp1 < hp2) {
+        result = "HPが高い方は？・・・・・・・・・友達の方がHPが高いです！  Too Bad…\n";
+    }
+    else {
+        result = "HPが高い方は？・・・・・・・・・・自分と友達のHPは同じです！ DRAW!\n";
+    }
+    printWithDelay(result);
+
+    std::cout << "\n＜　詳細情報　＞　" << std::endl;
+    std::cout << "～～～　自分の結果　～～～ \n" << home1.getHP() << std::endl;
+    std::cout << "自分のHPは " << home1.getHP() << std::endl;
+    std::cout << "自分のレベルは " << home1.getLevel() << std::endl;
+    std::cout << "自分の攻撃力は \n" << home1.getAttackPower() << std::endl;
+
+    std::cout << "～～～　友達の結果　～～～ \n" << home1.getHP() << std::endl;
+    std::cout << "友達のHPは " << home2.getHP() << std::endl;
+    std::cout << "友達のレベルは " << home2.getLevel() << std::endl;
+    std::cout << "友達の攻撃力は " << home2.getAttackPower() << std::endl;
+}
+
+/*void printLoadingScreen() {
+    int gauge = 0;
+    while (gauge < 100) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(200)); // 200msごとにゲージを増やす（速さ調整）
+        gauge += rand() % 10 + 1; // 不定期に増加（1～10の範囲）
+        if (gauge > 100) gauge = 100; // ゲージが100を超えないようにする
+        std::cout << "\rロード中・・・";
+        std::cout << std::setw(10) << std::setfill(' ') << " ";
+        for (int i = 0; i < gauge / 10; ++i) {
+            std::cout << "■";
+        }
+        for (int i = gauge / 10; i < 10; ++i) {
+            std::cout << "□";
+        }
+        std::cout << " " << gauge << "%";
+        std::cout.flush();
+    }
+    std::cout << std::endl;
+}*/
+// ロード画面のアニメーション
+void loadingAnimation() {
+    std::string loadingText = "ゲームを起動しています。準備中";
+    for (int i = 0; i <= 5; ++i) {
+        std::cout << "\r" << loadingText << std::string(i, ' *') << std::flush;
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+    std::cout << "\r" << std::string(loadingText.size() + 5, ' ') << "\r"; // Clear the line
+}
+
+// ダウンロードゲージの表示
+void displayLoadingScreen(int gauge) {
+    std::cout << "\rロード中・・・　　　　　　　　　　　　　";
+    std::cout << std::setw(11) << std::setfill(' ') << " ";
+    for (int i = 0; i < gauge / 10; ++i) {
+        std::cout << "■";
+    }
+    for (int i = gauge / 10; i < 10; ++i) {
+        std::cout << "□";
+    }
+    std::cout << " " << gauge << "%";
+    std::cout.flush();
+}
+
+// ロード画面を表示する関数
+void printLoadingScreen() {
+    loadingAnimation(); // ロード中のアニメーション
+    int gauge = 0;
+    while (gauge < 100) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(200)); // 200msごとにゲージを増やす（速さ調整）
+        gauge += rand() % 10 + 1; // 不定期に増加（1～10の範囲）
+        if (gauge > 100) gauge = 100; // ゲージが100を超えないようにする
+        displayLoadingScreen(gauge);
+    }
+    // ゲージが100%になったら"ロード中"とゲージを消す
+    std::cout << "\r" << std::string(80, ' ') << "\r";
+}
+
+/*void printWithDelay(const std::string& text, std::chrono::milliseconds delay) {
+    for (char ch : text) {
+        std::cout << ch;
+        std::cout.flush();
+        std::this_thread::sleep_for(delay);
+    }
+}*/
+
+int main() {
+    // ロード画面を表示
+    printLoadingScreen();
+
+    // 自分の家と友達の家を生成
+    double myHomeX, myHomeY;
+
+    // 文字列を一文字ずつ表示
+    std::string intro =
+        "ようこそ！！\n""\n私のゲームを遊んでくださり誠にありがとうございます。本ゲームとともに愉快なお時間をお過ごしください。\n"
+        "このゲームは、自分の家(拠点)を設置し、バトルロイヤルを繰り広げるゲームです。\nお友達とマップに飛び降り、対決しましょう!!\n"
+        "家を設置したら戦いに出かけ、積極的に戦闘に参加しましょう。HPが多かった方の勝利となります。\n長く居続けると体調不良を引き起こす危険性から60ターンまでとさせていただきます。\n"
+        "それではよろしいでしょうか？？\n""\n""\nでは Game Start です！！\n"
+        "\n自分の家の座標 x と y を(0～99のうちから)入力し、家を設置しましょう       ";
+    printWithDelay(intro, std::chrono::milliseconds(20)); // 20msの間隔で表示
+
+    // 1回目xの位置を入力させる
+    std::cout << "xの位置はどこにする？注意！0～99以外を入れると進行不可になります。x: ";
+    std::cin >> myHomeX;
+
+    // 2回目yの位置を表示し、入力させる
+    std::cout << "yの位置はどこにする？注意！0～99以外を入れると進行不可になります。y: ";
+    std::cin >> myHomeY;
+
+    MyHome myHome(myHomeX, myHomeY, 100, 1, 10);
+
+    // 友達の家は自動で決める
+    double friendHomeX = static_cast<double>(rand() % MAP_WIDTH);
+    double friendHomeY = static_cast<double>(rand() % MAP_HEIGHT);
+    FriendsHome friendHome(friendHomeX, friendHomeY, 100, 1, 10);
+
+    // 敵を生成
+    std::vector<std::unique_ptr<Enemy>> enemies;
+    enemies.push_back(std::make_unique<Enemy>(50, 1, 5, 20.0, 20.0));
+    enemies.push_back(std::make_unique<Enemy>(60, 2, 8, 30.0, 30.0));
+
+    // 罠を生成
+    std::vector<std::unique_ptr<Trap>> traps;
+    traps.push_back(std::make_unique<Trap>(10.0, 10.0));
+    traps.push_back(std::make_unique<Trap>(20.0, 20.0));
+
+    // 溶岩を生成（半径減少率を指定、例: 0.05）
+    Lava lava(50.0, 50.0, 10.0, 25, 0.05);
+
+    // パワーアップアイテムを生成
+    std::vector<std::unique_ptr<PowerUp>> powerUps;
+    powerUps.push_back(std::make_unique<PowerUp>(5.0, 5.0, 20, 1, 5));
+    powerUps.push_back(std::make_unique<PowerUp>(15.0, 15.0, 15, 1, 3));
+
+    // ゲームの制限時間（ターン）
+    int timeLimit = 60;
+    int turnCount = 0; // ターン数カウント
+
+    // ゲームループ
+    while (timeLimit > 0) {
+        turnCount++; // ターン数をカウント
+        std::cout << "\n==== バトルターン " << turnCount << " Start！ ====\n";
+
+        std::cout << "家を離れ、拠点から移動します。\n";
+        std::cout << "\n";
+
+        // 自分の家と友達の家の位置を更新
+        myHome.update(rand() % 5 - 2, rand() % 5 - 2); // ランダムに移動
+        friendHome.update(rand() % 5 - 2, rand() % 5 - 2); // ランダムに移動
+
+        // 敵の位置を更新
+        for (auto& enemy : enemies) {
+            enemy->updatePosition();
+            enemy->draw();
+
+            // 情報表示メソッドを呼び出す前に、敵1、敵2、友達、自分の順番で表示する
+            std::cout << "～～～～ 敵1の情報 ～～～～\n";
+            enemies[0]->draw();
+
+            std::cout << "～～～～ 敵2の情報 ～～～～\n";
+            enemies[1]->draw();
+
+            std::cout << "～～～～ 友達の情報 ～～～～\n";
+            friendHome.draw();
+
+            std::cout << "～～～～ 自分の情報 ～～～～\n";
+            myHome.draw();
+
+            // 自分の家との接触判定
+            if (enemy->isColliding(myHome.getX(), myHome.getY())) {
+                enemy->takeDamage(25);
+                myHome.takeDamage(25);
+                std::cout << "敵と自分が同じになり、戦ったぞ！お互いにダメージ - 25！\n";
+            }
+
+            // 友達の家との接触判定
+            if (enemy->isColliding(friendHome.getX(), friendHome.getY())) {
+                enemy->takeDamage(25);
+                friendHome.takeDamage(25);
+                std::cout << "敵と友達が同じになり、戦ったぞ！お互いにダメージ - 25！\n";
+            }
+
+            // 罠にかかったかどうかをチェック
+            for (const auto& trap : traps) {
+                if (trap->isTriggered(enemy->x, enemy->y)) {
+                    int damage = trap->calculateDamage(enemy->HP);
+                    enemy->takeDamage(damage);
+                    std::cout << "おぉ！敵が罠にかかりました！ ダメージ - " << damage << "!" << "\n";
+                }
+            }
+
+            // 溶岩に当たったかどうか確認
+            if (lava.isColliding(enemy->x, enemy->y)) {
+                enemy->takeDamage(lava.damage);
+                std::cout << "熱っ！！敵が溶岩でダメージを受けたぞ！ ダメージ -  " << lava.damage << "!" << "\n";
+            }
+        }
+
+        // パワーアップアイテムを収集
+        for (const auto& powerUp : powerUps) {
+            if (powerUp->isCollected(myHome.getX(), myHome.getY())) {
+                myHome.boostStats(powerUp->hpBoost, powerUp->levelBoost, powerUp->attackBoost);
+                std::cout << "自分はパワーアップアイテムを収集しました！\n";
+            }
+            if (powerUp->isCollected(friendHome.getX(), friendHome.getY())) {
+                friendHome.boostStats(powerUp->hpBoost, powerUp->levelBoost, powerUp->attackBoost);
+                std::cout << "友達はパワーアップアイテムを収集しました！\n";
+            }
+        }
+
+        // 自分の家と友達の家の状態を表示
+        myHome.draw();
+        friendHome.draw();
+
+        // 敵のレベルと攻撃力を一定時間ごとに上げる
+        if (turnCount % 5 == 0) {
+            for (auto& enemy : enemies) {
+                enemy->strengthen();
+            }
+        }
+
+        // 自分の家と友達の家のレベルと攻撃力を一定時間ごとに上げる
+        if (turnCount % 10 == 0) {
+            myHome.levelUp();
+            friendHome.levelUp();
+        }
+
+        // 1ターン毎の時間の経過
+        timeLimit -= 1;
+        std::this_thread::sleep_for(std::chrono::seconds(5 / 2));
+
+        std::cout << "==== ターン " << turnCount << " End ====\n";
+    }
+
+    // ゲーム終了
+    std::cout << "60ターン経ちました！これ以上戦い続けたら危険です。バトル終了です！" << std::endl;
+
+    // HP比較を行う
+    compareHP(myHome, friendHome);
+
+    return 0;
+}
+            </pre>
+        </div>
+        <div class="code-block">
+            <h2>コード3は好評につき逐次追加予定！！</h2>
+            <p>※今はサンプルを置いています。<br><br>このコードは、"Hello, world!"と出力する関数を定義しています。</p>
+            <pre>
+function helloWorld() {
+    console.log("Hello, world!");
+}
+            </pre>
+        </div>
+        <div class="code-block">
+            <h2>コード4は好評につき逐次追加予定！！</h2>
+            <p>※今はサンプルを置いています。<br><br>このコードは、2つの数値を加算する関数を定義しています。</p>
+            <pre>
+function add(a, b) {
+    return a + b;
+}
+            </pre>
+        </div>
+    </div>
+    <div class="footer">
+        <p>© 2024 プログラミングコード提供　でひでひ一同</p>
+    </div>
+</body>
+</html>
